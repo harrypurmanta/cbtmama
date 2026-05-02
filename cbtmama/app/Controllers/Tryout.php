@@ -133,13 +133,6 @@ class Tryout extends BaseController
                 }
             }
                 if ($proc == "selesai") {
-                    // $data = [
-                    //     "remaining_time" => $waktu,
-                    //     "date" => $date,
-                    //     "status_cd" => "normal",
-                    //     "isFinish" => "finish"
-                    // ];
-                    // $this->soalmodel->updateRemainingTime($this->session->user_id,$materi,$data,"tryout");
                     echo json_encode(array("proc" => $proc));
                 } else {
                     if ($proc == "prevsoal") {
@@ -149,18 +142,18 @@ class Tryout extends BaseController
                     }
                     
                     $res = $this->soalmodel->getSoal($no_soal,$group_id,$materi,$kolom_id)->getResult();
-                    // echo json_encode($no_soal);exit;
+                    
                     if (count($res)>0) {
                         $soal_nm = $res[0]->soal_nm;
                         $soal_id = $res[0]->soal_id;
                         $group_id = $res[0]->group_id;   
                         $kolom_id = $res[0]->kolom_id;
                         $res_ttlsoal = $this->soalmodel->getTotalSoal($group_id,$materi)->getResult();
-                    } 
-                    // else {
-                    //     $res_ttlsoal = $this->soalmodel->getTotalSoal($group_id,$materi)->getResult();
-                    // }
-                    // $no_soal_belum = array();
+                    } else {
+                        $proc = "selesai";
+                        return json_encode(array("proc" => $proc));
+                    }
+
                     foreach ($res_ttlsoal as $boxsoal) {
                         $getResponBox = $this->soalmodel->getResponBox($boxsoal->soal_id,$group_id,$materi,$this->session->user_id)->getResult();
                         $boxclick = "onclick='setboxsoal($boxsoal->no_soal)'";
