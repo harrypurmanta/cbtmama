@@ -1,0 +1,29 @@
+# === CI4 System ===
+!/writable/.gitkeep
+
+# === Environment ===
+.env
+
+# === Composer ===
+simulasi2/vendor/
+
+# === Cache & Logs ===
+simulasi2/writable/cache/*
+simulasi2/writable/logs/*
+simulasi2/writable/debugbar/*
+simulasi2/writable/session/*
+simulasi2/writable/uploads/*
+
+# === User Uploads (optional) ===
+simulasi2/public/uploads/*
+!/public/uploads/.gitkeep
+
+# === OS & Editor ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# === Test & Temp ===
+*.log
+*.tmp
