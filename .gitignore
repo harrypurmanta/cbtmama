@@ -5,17 +5,17 @@
 .env
 
 # === Composer ===
-simulasi2/vendor/
+cbtmama/vendor/
 
 # === Cache & Logs ===
-simulasi2/writable/cache/*
-simulasi2/writable/logs/*
-simulasi2/writable/debugbar/*
-simulasi2/writable/session/*
-simulasi2/writable/uploads/*
+cbtmama/writable/cache/*
+cbtmama/writable/logs/*
+cbtmama/writable/debugbar/*
+cbtmama/writable/session/*
+cbtmama/writable/uploads/*
 
 # === User Uploads (optional) ===
-simulasi2/public/uploads/*
+cbtmama/public/uploads/*
 !/public/uploads/.gitkeep
 
 # === OS & Editor ===
