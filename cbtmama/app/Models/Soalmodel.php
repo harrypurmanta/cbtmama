@@ -473,31 +473,17 @@ public function getAllSoalSK() {
     }
 
 
-    public function getPasshandSkor($user_id,$session,$materi) {
-        if ($session == "") {
-            return $this->db->table('respon a')
-                        ->select('*, a.pilihan_nm as pilihan_respon, a.no_soal as no_soal_respon')
-                        ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
-                        ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('b.status_cd','normal')
-                        ->where('a.status_cd','normal')
+    public function getHasilFarmakologi($materi) {
+        return $this->db->table('respon a')
+                        ->select('*')
+                        // ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
+                        ->join('soal c','c.soal_id=a.soal_id','left')
+                        // ->where('b.status_cd','normal')
+                        // ->where('a.status_cd','normal')
                         ->where('a.group_id',1)
-                        ->where('a.created_user_id',$user_id)
-                        // ->where('a.session',$session)
-                        ->where('c.materi',$materi)
+                        ->where('a.materi',$materi)
+                        ->limit(135)
                         ->get();
-        } else {
-            return $this->db->table('respon a')
-                        ->select('*, a.pilihan_nm as pilihan_respon, a.no_soal as no_soal_respon')
-                        ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
-                        ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('a.group_id',1)
-                        ->where('a.created_user_id',$user_id)
-                        ->where('a.session',$session)
-                        ->where('c.materi',$materi)
-                        ->where('a.status_cd','normal')
-                        ->get();
-        }
     }
 
     public function getKecerdasanSkor($user_id,$session,$materi) {

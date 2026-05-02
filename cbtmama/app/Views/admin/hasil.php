@@ -65,7 +65,6 @@
                   <thead>
                   <tr>
                     <th style="text-align:center;">Materi</th>
-                    <th style="text-align:center;">latihan</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -74,15 +73,9 @@
                    
                         <?php
                             foreach ($materi as $km) {
-                                echo " <div><a target='_blank' href='".base_url()."/admin/users/hasilexcel/$user_id/".$km->materi_id."'>Excel ".$km->materi_nm."</a> | <a target='_blank' href='".base_url() ."/admin/users/hasilweb/$user_id/".$km->materi_id."'>Web ".$km->materi_nm."</a> | <a target='_blank' href='".base_url() ."/admin/users/hasilpdf/$user_id/".$km->materi_id."'>PDF ".$km->materi_nm."</a></div>";
-
+                                echo " <div><a target='_blank' href='".base_url()."/admin/users/hasilexcel/$user_id/".$km->materi_id."'>Excel Farmakologi</a></div>";
                             }
                         ?>
-                        
-                    </td>
-                    
-                    <td style="text-align:center;"><a target="_blank" href="<?= base_url() ?>/admin/users/hasillatihan/<?= $user_id ?>/5">Sikap Kerja</a> | <span onclick="listmaterilatihan()" style="cursor:pointer;">Materi</span> | <span style="cursor:pointer;" onclick="listsubmaterilatihan()">Sub Materi</span>
-                    <div class="col-md-12" id="listlatihan"></div>
                     </td>
                     
                   </tr>

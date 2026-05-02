@@ -18,19 +18,10 @@
             <a href="<?= base_url() ?>/admin/soal" class="nav-link" style="color:#ffffff;">Soal</a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url() ?>/admin/soalsikapkerjamateri" class="nav-link" style="color:#ffffff;">SK Materi</a>
-          </li>
-          <li class="nav-item">
-            <a href="<?= base_url() ?>/admin/soallatihan" class="nav-link" style="color:#ffffff;">Soal latihan</a>
-          </li>
-          <li class="nav-item">
-            <a href="<?= base_url() ?>/admin/soalsikapkerjalatihan" class="nav-link" style="color:#ffffff;">SK latihan</a>
-          </li>
-          <li class="nav-item">
-            <a href="<?= base_url() ?>/admin/token" class="nav-link" style="color:#ffffff;">Token</a>
-          </li>
-          <li class="nav-item">
             <a href="<?= base_url() ?>/admin/users" class="nav-link" style="color:#ffffff;">Users</a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url() ?>/admin/hasil" class="nav-link" style="color:#ffffff;">Hasil</a>
           </li>
         </ul>
 

@@ -301,116 +301,73 @@ class Users extends BaseController
         if ($this->session->get("user_nm") == "") {
 			return redirect('/');
 		}
-        $user_id = $this->request->getUri()->getSegment(4);
-        $materi = $this->request->getUri()->getSegment(5);
-        $res = $this->soalmodel->getPasshandSkor($user_id,"",$materi)->getResult();
-        $reskep = $this->soalmodel->getKepribadianSkor($user_id,"",$materi)->getResult();
-        $fileName = $user_id."_laporan_".$materi.".xlsx"; 
-		$spreadsheet = new Spreadsheet();
-		$sheet = $spreadsheet->getActiveSheet();
-        $columnPasshand = "A";
-        $columnkecerdasan = "7";
-        $columnkepribadian = "A";
-        $sheet->setCellValue("A" . "1", "PASSHAND");
-        foreach ($res as $val) {
-			$sheet->setCellValue($columnPasshand . "2", $val->no_soal_respon);
-            $sheet->setCellValue($columnPasshand . "3", $val->pilihan_respon);
-			$columnPasshand++;
-		}
-
-        $resSoalKec = $this->soalmodel->resSoalKec(2,$materi)->getResult();
-
-        $sheet->setCellValue("A" . "5", "KECERDASAN");
-        $sheet->setCellValue("A" . "6", "SOAL");
-        $sheet->setCellValue("B" . "6", "JAWABAN");
-        $sheet->setCellValue("G" . "6", "KUNCI");
-        $sheet->setCellValue("H" . "6", "HASIL");
-        foreach ($resSoalKec as $sl) {
-			$sheet->setCellValue("A" . $columnkecerdasan, $sl->no_soal.". ". $sl->soal_nm);
-            $resjawaban = $this->soalmodel->getJawabanBysoalId($sl->soal_id)->getResult();
-            $clm = "B";
-            foreach ($resjawaban as $jwb) {
-                $getResponexcel = $this->soalmodel->getResponexcel($sl->soal_id,$jwb->jawaban_id,$user_id,$materi)->getResult();
-                if (count($getResponexcel)>0) {
-                    if ($getResponexcel[0]->pilihan_nm == $jwb->pilihan_nm) {
-                        $sheet->setCellValue($clm . $columnkecerdasan, $jwb->pilihan_nm.". ". $jwb->jawaban_nm);
-                        $sheet->getStyle($clm . $columnkecerdasan)->getFont()->setBold(true);
-                    } else {
-                        $sheet->setCellValue($clm . $columnkecerdasan, $jwb->pilihan_nm.". ". $jwb->jawaban_nm);
-                    }
-
-                    if ($getResponexcel[0]->pilihan_nm == $sl->kunci) {
-                        $hasilx = "BENAR";
-                    } else {
-                        $hasilx = "SALAH";
-                    }
-                    
-                } else {
-                    $sheet->setCellValue($clm . $columnkecerdasan, $jwb->pilihan_nm.". ". $jwb->jawaban_nm);
-                }
-                $clm++;
-            }
-
-			
-			$sheet->setCellValue("G" . $columnkecerdasan, $sl->kunci);
-			$sheet->setCellValue("H" . $columnkecerdasan, $hasilx);
-			$columnkecerdasan++;
-		}
-
-        $columnkecerdasan = $columnkecerdasan + 2;
-        $columnkecerdasanx = $columnkecerdasan + 1;
-        $resSoalKecx = $this->soalmodel->resSoalKec(3,$materi)->getResult();
-
-        $sheet->setCellValue("A" . $columnkecerdasan, "KEPRIBADIAN");
-        $sheet->setCellValue("A" . $columnkecerdasanx, "SOAL");
-        $sheet->setCellValue("B" . $columnkecerdasanx, "JAWABAN");
-        $sheet->setCellValue("G" . $columnkecerdasanx, "KUNCI");
-        $sheet->setCellValue("H" . $columnkecerdasanx, "HASIL");
-        foreach ($resSoalKecx as $slx) {
-			$sheet->setCellValue("A" . $columnkecerdasanx, $slx->no_soal.". ". $slx->soal_nm);
-            $resjawabanx = $this->soalmodel->getJawabanBysoalId($slx->soal_id)->getResult();
-            $clm = "B";
-            foreach ($resjawabanx as $jwbx) {
-                $getResponexcelx = $this->soalmodel->getResponexcelx($slx->soal_id,$jwbx->jawaban_id,$user_id,$materi)->getResult();
-                if (count($getResponexcelx)>0) {
-                    if ($getResponexcelx[0]->pilihan_nm == $jwbx->pilihan_nm) {
-                        $sheet->setCellValue($clm . $columnkecerdasanx, $jwbx->pilihan_nm.". ". $jwbx->jawaban_nm);
-                        $sheet->getStyle($clm . $columnkecerdasanx)->getFont()->setBold(true);
-                    } else {
-                        $sheet->setCellValue($clm . $columnkecerdasanx, $jwbx->pilihan_nm.". ". $jwbx->jawaban_nm);
-                    }
-
-                    if ($getResponexcelx[0]->pilihan_nm == $slx->kunci) {
-                        $hasilxx = "BENAR";
-                    } else {
-                        $hasilxx = "SALAH";
-                    }
-                    
-                } else {
-                    $sheet->setCellValue($clm . $columnkecerdasanx, $jwbx->pilihan_nm.". ". $jwbx->jawaban_nm);
-                }
-                $clm++;
-            }
-
-			
-			$sheet->setCellValue("G" . $columnkecerdasanx, $slx->kunci);
-			$sheet->setCellValue("H" . $columnkecerdasanx, $hasilxx);
-			$columnkecerdasanx++;
-		}
-
         
+        $materi_id = $this->request->getUri()->getSegment(5);
+        if (empty($materi_id)) {
+            $materi_id = 1;
+        }
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('respon a');
+        $builder->select('a.created_user_id, a.pilihan_nm, c.kunci, u.user_nm as nim, p.person_nm as nama');
+        $builder->join('soal c', 'c.soal_id = a.soal_id', 'left');
+        $builder->join('users u', 'u.user_id = a.created_user_id', 'left');
+        $builder->join('person p', 'p.person_id = u.person_id', 'left');
+        $builder->where('a.materi', $materi_id);
+        $builder->where('a.group_id', 1);
+        $results = $builder->get()->getResult();
+
+        $scores = [];
+        foreach ($results as $r) {
+            $uid = $r->created_user_id;
+            if (!isset($scores[$uid])) {
+                $scores[$uid] = [
+                    'nim' => $r->nim,
+                    'nama' => $r->nama,
+                    'benar' => 0,
+                    'total' => 0
+                ];
+            }
+            $scores[$uid]['total']++;
+            if ($r->pilihan_nm == $r->kunci) {
+                $scores[$uid]['benar']++;
+            }
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->setCellValue('A1', 'NIM');
+        $sheet->setCellValue('B1', 'Nama');
+        $sheet->setCellValue('C1', 'Benar');
+        $sheet->setCellValue('D1', 'Salah');
+        $sheet->setCellValue('E1', 'Skor');
+
+        $row = 2;
+        foreach ($scores as $data) {
+            $skor = 0;
+            if ($data['total'] > 0) {
+                $skor = ($data['benar'] / $data['total']) * 100;
+            }
+            $salah = $data['total'] - $data['benar'];
+            
+            $sheet->setCellValue('A' . $row, $data['nim']);
+            $sheet->setCellValue('B' . $row, $data['nama']);
+            $sheet->setCellValue('C' . $row, $data['benar']);
+            $sheet->setCellValue('D' . $row, $salah);
+            $sheet->setCellValue('E' . $row, round($skor, 2));
+            $row++;
+        }
+
+        $fileName = 'Hasil_Farmakologi.xlsx';
 		$writer = new Xlsx($spreadsheet);
-		$filepath = $fileName;
-		$writer->save($filepath);
- 
-		header("Content-Type: application/vnd.ms-excel");
-		header('Content-Disposition: attachment; filename="' . basename($filepath) . '"');
+		
+		header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		header('Content-Disposition: attachment; filename="' . basename($fileName) . '"');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');
 		header('Pragma: public');
-		header('Content-Length: ' . filesize($filepath));
-		flush();
-		readfile($filepath);
+		$writer->save('php://output');
 		exit;
     }
 
